@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    password: user
+    username: user
+    url: jdbc:mysql://database:3306/bookstore
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true

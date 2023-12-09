@@ -1,0 +1,8 @@
+FROM gradle:jdk17
+ 
+WORKDIR /app
+COPY gradle-docker-reload.sh .
+COPY build.gradle .
+RUN gradle --no-daemon --warning-mode all --console=plain
+
+CMD ["sh", "gradle-docker-reload.sh"]
