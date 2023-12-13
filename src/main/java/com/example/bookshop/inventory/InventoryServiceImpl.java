@@ -52,4 +52,17 @@ public class InventoryServiceImpl implements InventoryService {
         this.inventoryRepository.delete(book);
         return isbn;
     }
+
+    @Override
+    public String update(BookDto bookDto) {
+        Book book = this.inventoryRepository.findByIsbn(bookDto.isbn())
+                                            .orElseThrow(() -> new BookNotFoundByIsbnException(bookDto.isbn()));
+
+        book.setTitle(bookDto.title());
+        book.setDescription(bookDto.description());
+        book.setPrice(bookDto.price());
+
+        this.inventoryRepository.save(book);
+        return book.getIsbn();
+    }
 }

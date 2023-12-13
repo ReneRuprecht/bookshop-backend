@@ -36,4 +36,10 @@ public class InventoryController {
         String response = inventoryService.deleteByIsbn(isbn);
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping
+    public ResponseEntity<String> update(@RequestBody BookDto bookDto) {
+        String response = inventoryService.update(bookDto);
+        return ResponseEntity.ok(response);
+    }
 }

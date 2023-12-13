@@ -11,4 +11,5 @@ public interface InventoryService {
 
     String deleteByIsbn(String isbn);
 
+    String update(BookDto bookDto);
 }
