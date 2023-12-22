@@ -12,3 +12,6 @@ spring:
       hibernate:
         format_sql: true
     show-sql: true
+
+app:
+  secret_key: 1231231231231231231231231231231231231231231231231
