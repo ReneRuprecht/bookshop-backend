@@ -1,4 +1,4 @@
-package com.example.bookshop.config;
+package com.example.bookshop.authentication.config;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;

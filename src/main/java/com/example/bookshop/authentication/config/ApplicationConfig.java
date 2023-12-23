@@ -1,4 +1,4 @@
-package com.example.bookshop.config;
+package com.example.bookshop.authentication.config;
 
 import com.example.bookshop.authentication.AuthenticationRepository;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.bookshop.config;
+package com.example.bookshop.authentication.config;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;

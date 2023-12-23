@@ -5,7 +5,7 @@ import com.example.bookshop.authentication.exception.UserNotFoundException;
 import com.example.bookshop.authentication.request.AuthenticateRequest;
 import com.example.bookshop.authentication.request.RegisterRequest;
 import com.example.bookshop.authentication.response.AuthenticationResponse;
-import com.example.bookshop.config.JwtService;
+import com.example.bookshop.authentication.config.JwtService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

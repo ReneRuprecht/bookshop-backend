@@ -1,4 +1,4 @@
-package com.example.bookshop.config;
+package com.example.bookshop.authentication.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
