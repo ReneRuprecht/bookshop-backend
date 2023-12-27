@@ -1,17 +1,15 @@
 spring:
   datasource:
-    password: user
     username: user
-    url: jdbc:mysql://database:3306/bookshop
+    password: user
+    url: jdbc:mysql://127.0.0.1:3307/bookshop
     driverClassName: com.mysql.cj.jdbc.Driver
   jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
     show-sql: true
-
-app:
-  secret_key: 1231231231231231231231231231231231231231231231231

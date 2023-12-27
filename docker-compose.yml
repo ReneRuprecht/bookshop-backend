@@ -10,6 +10,7 @@ services:
       dockerfile: dockerfile-dev
     ports:
       - "8081:8080"
+      - "5005:5005"
     volumes:
       - ./src:/app/src
 
@@ -24,7 +25,7 @@ services:
       environment:
         MYSQL_USER: "user"
         MYSQL_PASSWORD: "user"
-        MYSQL_DATABASE: "bookstore"
+        MYSQL_DATABASE: "bookshop"
         MYSQL_ROOT_PASSWORD: "root"
       volumes:
         - ./db-data:/var/lib/mysql
@@ -32,3 +33,19 @@ services:
         test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
         timeout: 20s
         retries: 10
+
+  testing-db:
+      image: mysql:5.7.16
+      container_name: bookshop-testing-db
+      ports:
+        - "3307:3306"
+      command:
+        - --character-set-server=utf8
+        - --collation-server=utf8_unicode_ci
+      environment:
+        MYSQL_USER: "user"
+        MYSQL_PASSWORD: "user"
+        MYSQL_DATABASE: "bookshop"
+        MYSQL_ROOT_PASSWORD: "root"
+      volumes:
+        - ./testing-db-data:/var/lib/mysql
