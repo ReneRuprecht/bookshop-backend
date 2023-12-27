@@ -12,8 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -67,5 +66,22 @@ class InventoryRepositoryTest {
         assertEquals(book.getTitle(), bookFromDb.getTitle());
         assertEquals(book.getDescription(), bookFromDb.getDescription());
         assertThat(book.getPrice()).isEqualByComparingTo(bookFromDb.getPrice());
+    }
+
+    @Test
+    @Order(3)
+    void delete() {
+        String isbnToCheck = "1";
+
+        Book bookFromDb = underTest.findByIsbn(isbnToCheck)
+                                   .orElse(null);
+        assertNotNull(bookFromDb);
+
+        underTest.delete(bookFromDb);
+
+        boolean isBookPresent = underTest.findByIsbn(isbnToCheck)
+                                         .isPresent();
+
+        assertFalse(isBookPresent);
     }
 }

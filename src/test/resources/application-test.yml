@@ -2,7 +2,7 @@ spring:
   datasource:
     username: user
     password: user
-    url: jdbc:mysql://127.0.0.1:3307/bookshop
+    url: jdbc:mysql://testing-db:3306/bookshop
     driverClassName: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -11,5 +11,5 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
     show-sql: true
