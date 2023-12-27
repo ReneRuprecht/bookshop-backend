@@ -1,8 +1,7 @@
 package com.example.bookshop.inventory;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -10,6 +9,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "Books")
+@Builder
+@AllArgsConstructor
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

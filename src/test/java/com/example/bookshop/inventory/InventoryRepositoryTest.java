@@ -34,7 +34,7 @@ class InventoryRepositoryTest {
     @Test
     @Order(1)
     @Rollback(value = false)
-    void save() {
+    void shouldSaveABookToTheDatabase() {
         Book book = new Book();
         book.setIsbn("1");
         book.setTitle("test title");
@@ -51,7 +51,7 @@ class InventoryRepositoryTest {
 
     @Test
     @Order(2)
-    void findByIsbn() {
+    void shouldFindABookByIsbn() {
         Book book = new Book();
         book.setIsbn("1");
         book.setTitle("test title");
@@ -70,7 +70,7 @@ class InventoryRepositoryTest {
 
     @Test
     @Order(3)
-    void delete() {
+    void shouldDeleteABookByIsbn() {
         String isbnToCheck = "1";
 
         Book bookFromDb = underTest.findByIsbn(isbnToCheck)
