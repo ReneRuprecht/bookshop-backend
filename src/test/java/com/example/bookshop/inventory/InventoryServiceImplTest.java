@@ -1,5 +1,7 @@
 package com.example.bookshop.inventory;
 
+import com.example.bookshop.inventory.exception.BookAlreadyExistsException;
+import com.example.bookshop.inventory.exception.BookNotFoundByIsbnException;
 import com.example.bookshop.inventory.util.MapperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,8 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,23 +60,23 @@ class InventoryServiceImplTest {
                                   .price(BigDecimal.valueOf(2))
                                   .build();
 
-        List<BookDto> expected = List.of(bookDto1, bookDto2);
+        List<BookDto> expectedListOfBookDto = List.of(bookDto1, bookDto2);
 
         when(inventoryRepository.findAll()).thenReturn(books);
 
         when(mapperImpl.convertBookToBookDto(book1)).thenReturn(bookDto1);
         when(mapperImpl.convertBookToBookDto(book2)).thenReturn(bookDto2);
 
-        List<BookDto> actual = underTest.findAll();
+        List<BookDto> actualListOfBookDto = underTest.findAll();
 
         verify(inventoryRepository, times(1)).findAll();
 
-        assertEquals(expected.size(), actual.size());
+        assertEquals(expectedListOfBookDto.size(), actualListOfBookDto.size());
 
-        assertNotNull(actual);
-        assertEquals(2, actual.size());
-        assertEquals(bookDto1, actual.get(0));
-        assertEquals(bookDto2, actual.get(1));
+        assertNotNull(actualListOfBookDto);
+        assertEquals(2, actualListOfBookDto.size());
+        assertEquals(bookDto1, actualListOfBookDto.get(0));
+        assertEquals(bookDto2, actualListOfBookDto.get(1));
 
         verify(inventoryRepository, times(1)).findAll();
         verify(mapperImpl, times(2)).convertBookToBookDto(any());
@@ -91,46 +92,92 @@ class InventoryServiceImplTest {
                          .price(BigDecimal.valueOf(1))
                          .build();
 
-        BookDto bookDto1 = BookDto.builder()
-                                  .isbn(isbnToSearch)
-                                  .title("t1")
-                                  .description("d1")
-                                  .price(BigDecimal.valueOf(1))
-                                  .build();
+        BookDto expectedBookDto = BookDto.builder()
+                                         .isbn(isbnToSearch)
+                                         .title("t1")
+                                         .description("d1")
+                                         .price(BigDecimal.valueOf(1))
+                                         .build();
 
-        when(mapperImpl.convertBookToBookDto(book1)).thenReturn(bookDto1);
+        when(mapperImpl.convertBookToBookDto(book1)).thenReturn(expectedBookDto);
         when(inventoryRepository.findByIsbn(isbnToSearch)).thenReturn(Optional.of(book1));
 
-        BookDto actual = underTest.findByIsbn(isbnToSearch);
+        BookDto actualBookDto = underTest.findByIsbn(isbnToSearch);
 
-        assertNotNull(actual);
+        assertNotNull(actualBookDto);
 
         verify(mapperImpl, times(1)).convertBookToBookDto(book1);
         verify(inventoryRepository, times(1)).findByIsbn(isbnToSearch);
 
-        assertEquals(bookDto1, actual);
+        assertEquals(expectedBookDto, actualBookDto);
     }
 
     @Test
-    void shouldDeleteABookByIsbn() {
-        String isbnToDelete = "1";
+    void shouldThrowBookNotFoundException() {
+        String isbnToSearch = "1";
+        String expectedMessage = String.format("Book with isbn: %s does not exist", isbnToSearch);
 
+        when(inventoryRepository.findByIsbn(isbnToSearch)).thenReturn(Optional.empty());
+
+        BookNotFoundByIsbnException actualException = assertThrows(BookNotFoundByIsbnException.class, () -> {
+            underTest.findByIsbn(isbnToSearch);
+        });
+
+        verify(inventoryRepository, times(1)).findByIsbn(isbnToSearch);
+
+        assertEquals(expectedMessage, actualException.getMessage());
+    }
+
+
+    @Test
+    void shouldThrowBookAlreadyExistsException() {
+        String isbnToSearch = "1";
+        String expectedMessage = String.format("Book with isbn: %s does already exist", isbnToSearch);
         Book book1 = Book.builder()
-                         .isbn(isbnToDelete)
+                         .isbn(isbnToSearch)
                          .title("t1")
                          .description("d1")
                          .price(BigDecimal.valueOf(1))
                          .build();
 
-        when(inventoryRepository.findByIsbn(isbnToDelete)).thenReturn(Optional.ofNullable(book1));
+        BookDto bookDtoToSave = BookDto.builder()
+                                       .isbn(isbnToSearch)
+                                       .title("t2")
+                                       .description("d2")
+                                       .price(BigDecimal.valueOf(2))
+                                       .build();
+
+        when(inventoryRepository.findByIsbn(isbnToSearch)).thenReturn(Optional.of(book1));
+
+        BookAlreadyExistsException actualException = assertThrows(BookAlreadyExistsException.class, () -> {
+            underTest.save(bookDtoToSave);
+        });
+
+        verify(inventoryRepository, times(1)).findByIsbn(isbnToSearch);
+
+        assertEquals(expectedMessage, actualException.getMessage());
+    }
+
+    @Test
+    void shouldDeleteABookByIsbn() {
+        String expectedIsbnToDelete = "1";
+
+        Book book1 = Book.builder()
+                         .isbn(expectedIsbnToDelete)
+                         .title("t1")
+                         .description("d1")
+                         .price(BigDecimal.valueOf(1))
+                         .build();
+
+        when(inventoryRepository.findByIsbn(expectedIsbnToDelete)).thenReturn(Optional.ofNullable(book1));
         assertNotNull(book1);
 
-        String actual = underTest.deleteByIsbn(isbnToDelete);
+        String actualIsbn = underTest.deleteByIsbn(expectedIsbnToDelete);
 
-        verify(inventoryRepository, times(1)).findByIsbn(isbnToDelete);
+        verify(inventoryRepository, times(1)).findByIsbn(expectedIsbnToDelete);
         verify(inventoryRepository, times(1)).delete(book1);
 
-        assertEquals(isbnToDelete, actual);
+        assertEquals(expectedIsbnToDelete, actualIsbn);
     }
 
     @Test
@@ -150,20 +197,20 @@ class InventoryServiceImplTest {
                                   .price(BigDecimal.valueOf(2))
                                   .build();
 
-        Book expected = Book.builder()
-                            .isbn(isbn)
-                            .title("t2")
-                            .description("d2")
-                            .price(BigDecimal.valueOf(2))
-                            .build();
+        Book expectedBook = Book.builder()
+                                .isbn(isbn)
+                                .title("t2")
+                                .description("d2")
+                                .price(BigDecimal.valueOf(2))
+                                .build();
 
         when(inventoryRepository.findByIsbn(isbn)).thenReturn(Optional.ofNullable(book1));
 
-        String actual = underTest.update(bookDto1);
+        String actualIsbn = underTest.update(bookDto1);
 
-        verify(inventoryRepository, times(1)).save(expected);
+        verify(inventoryRepository, times(1)).save(expectedBook);
         verify(inventoryRepository, times(1)).findByIsbn(isbn);
 
-        assertEquals(actual, expected.getIsbn());
+        assertEquals(actualIsbn, expectedBook.getIsbn());
     }
 }
