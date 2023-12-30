@@ -29,11 +29,6 @@ public class InventoryServiceImplIntegrationTest {
     @Autowired
     private InventoryServiceImpl underTest;
 
-    @AfterAll
-    void clean() {
-        jdbcTemplate.execute("DELETE from books");
-    }
-
     @BeforeAll
     void setup() {
         jdbcTemplate.execute("DELETE from books");
@@ -41,6 +36,10 @@ public class InventoryServiceImplIntegrationTest {
         jdbcTemplate.execute("insert into books (id,isbn,title,description,price) values ('2','2','t2','d2',2)");
     }
 
+    @AfterAll
+    void clean() {
+        jdbcTemplate.execute("DELETE from books");
+    }
 
     @Test
     @Order(1)
