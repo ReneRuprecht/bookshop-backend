@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -147,8 +147,7 @@ class InventoryControllerTest {
 
         when(inventoryService.save(bookDtoToSave)).thenReturn(bookDtoToSave.isbn());
 
-        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
-                                                 .content(content))
+        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
                .andExpect(status().isOk())
                .andExpect(content().string("1"));
 
@@ -169,10 +168,42 @@ class InventoryControllerTest {
 
         when(inventoryService.save(bookDtoToSave)).thenThrow(BookAlreadyExistsException.class);
 
-        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
-                                                 .content(content))
+        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
                .andExpect(status().isBadRequest());
 
         verify(inventoryService, times(1)).save(bookDtoToSave);
+    }
+
+    @Test
+    void shouldDeleteABook() throws Exception {
+
+        String isbnToDelete = "1";
+
+        when(inventoryService.deleteByIsbn(isbnToDelete)).thenReturn(isbnToDelete);
+
+        mockMvc.perform(delete(String.format("/api/v1/inventory/%s", isbnToDelete)))
+               .andExpect(status().isOk());
+
+        verify(inventoryService, times(1)).deleteByIsbn(isbnToDelete);
+    }
+
+    @Test
+    void shouldUpdateABook() throws Exception {
+
+        BookDto bookDtoToUpdate = BookDto.builder()
+                                         .isbn("1")
+                                         .title("t1")
+                                         .description("d1")
+                                         .price(BigDecimal.valueOf(1))
+                                         .build();
+
+        String content = objectMapper.writeValueAsString(bookDtoToUpdate);
+
+        when(inventoryService.update(bookDtoToUpdate)).thenReturn(bookDtoToUpdate.isbn());
+
+        mockMvc.perform(put("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
+               .andExpect(status().isOk());
+
+        verify(inventoryService, times(1)).update(bookDtoToUpdate);
     }
 }

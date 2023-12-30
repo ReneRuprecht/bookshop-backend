@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -142,8 +142,7 @@ class InventoryControllerIntegrationTest {
 
         String content = objectMapper.writeValueAsString(bookDtoToSave);
 
-        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
-                                                 .content(content))
+        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
                .andExpect(status().isOk())
                .andExpect(content().string("1"));
     }
@@ -161,8 +160,36 @@ class InventoryControllerIntegrationTest {
 
         String content = objectMapper.writeValueAsString(bookDtoToSave);
 
-        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
-                                                 .content(content))
+        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @Order(7)
+    void shouldUpdateABookAndReturnIsbn() throws Exception {
+
+        BookDto bookDtoToSave = BookDto.builder()
+                                       .isbn("1")
+                                       .title("t2")
+                                       .description("d2")
+                                       .price(BigDecimal.valueOf(2))
+                                       .build();
+
+        String content = objectMapper.writeValueAsString(bookDtoToSave);
+
+        mockMvc.perform(put("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
+               .andExpect(status().isOk())
+               .andExpect(content().string(bookDtoToSave.isbn()));
+    }
+
+    @Test
+    @Order(8)
+    void shouldDeleteABookAndReturnIsbn() throws Exception {
+
+        String isbn = "1";
+
+        mockMvc.perform(delete(String.format("/api/v1/inventory/%s", isbn)))
+               .andExpect(status().isOk())
+               .andExpect(content().string(isbn));
     }
 }
