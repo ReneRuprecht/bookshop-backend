@@ -5,9 +5,11 @@ import com.example.bookshop.inventory.exception.BookNotFoundByIsbnException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,8 +24,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@WebMvcTest(value = InventoryController.class,
+        excludeAutoConfiguration = {
+                SecurityAutoConfiguration.class,
+        },
+        excludeFilters = {
+                @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com.example.bookshop.authentication.config.*")
+        })
 @ActiveProfiles("test")
 class InventoryControllerTest {
 
@@ -105,7 +112,8 @@ class InventoryControllerTest {
 
         String expected = objectMapper.writeValueAsString(bookDto);
 
-        mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/v1/inventory/%s", book.getIsbn()))
+        mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/v1/inventory/%s",
+                                                                 book.getIsbn()))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -126,7 +134,8 @@ class InventoryControllerTest {
 
         when(inventoryService.findByIsbn(book.getIsbn())).thenThrow(BookNotFoundByIsbnException.class);
 
-        mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/v1/inventory/%s", book.getIsbn()))
+        mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/v1/inventory/%s",
+                                                                 book.getIsbn()))
                                               .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isNotFound());
 
@@ -147,7 +156,8 @@ class InventoryControllerTest {
 
         when(inventoryService.save(bookDtoToSave)).thenReturn(bookDtoToSave.isbn());
 
-        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
+        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
+                                                 .content(content))
                .andExpect(status().isOk())
                .andExpect(content().string("1"));
 
@@ -168,7 +178,8 @@ class InventoryControllerTest {
 
         when(inventoryService.save(bookDtoToSave)).thenThrow(BookAlreadyExistsException.class);
 
-        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
+        mockMvc.perform(post("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
+                                                 .content(content))
                .andExpect(status().isBadRequest());
 
         verify(inventoryService, times(1)).save(bookDtoToSave);
@@ -201,7 +212,8 @@ class InventoryControllerTest {
 
         when(inventoryService.update(bookDtoToUpdate)).thenReturn(bookDtoToUpdate.isbn());
 
-        mockMvc.perform(put("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON).content(content))
+        mockMvc.perform(put("/api/v1/inventory").contentType(MediaType.APPLICATION_JSON)
+                                                .content(content))
                .andExpect(status().isOk());
 
         verify(inventoryService, times(1)).update(bookDtoToUpdate);
