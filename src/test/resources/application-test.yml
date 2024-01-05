@@ -2,7 +2,7 @@ spring:
   datasource:
     username: user
     password: user
-    url: jdbc:mysql://testing-db:3306/bookshop
+    url: jdbc:mysql://127.0.0.1:3307/bookshop
     driverClassName: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect

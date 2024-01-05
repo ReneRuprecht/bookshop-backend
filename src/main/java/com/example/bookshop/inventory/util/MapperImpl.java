@@ -12,6 +12,7 @@ public class MapperImpl implements Mapper {
         book.setTitle(bookDto.title());
         book.setDescription(bookDto.description());
         book.setPrice(bookDto.price());
+        book.setAmount(bookDto.amount());
         return book;
     }
 
@@ -21,6 +22,7 @@ public class MapperImpl implements Mapper {
                       .title(book.getTitle())
                       .description(book.getDescription())
                       .price(book.getPrice())
+                      .amount(book.getAmount())
                       .build();
     }
 }

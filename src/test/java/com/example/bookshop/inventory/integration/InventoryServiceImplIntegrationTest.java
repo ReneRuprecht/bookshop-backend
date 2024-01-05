@@ -32,8 +32,8 @@ public class InventoryServiceImplIntegrationTest {
     @BeforeAll
     void setup() {
         jdbcTemplate.execute("DELETE from books");
-        jdbcTemplate.execute("insert into books (id,isbn,title,description,price) values ('1','1','t1','d1',1)");
-        jdbcTemplate.execute("insert into books (id,isbn,title,description,price) values ('2','2','t2','d2',2)");
+        jdbcTemplate.execute("insert into books (id,isbn,title,description,price,amount) values ('1','1','t1','d1',1,1)");
+        jdbcTemplate.execute("insert into books (id,isbn,title,description,price,amount) values ('2','2','t2','d2',2,2)");
     }
 
     @AfterAll
@@ -50,6 +50,7 @@ public class InventoryServiceImplIntegrationTest {
                                   .title("t1")
                                   .description("d1")
                                   .price(BigDecimal.valueOf(1))
+                                  .amount(1)
                                   .build();
 
         BookDto bookDto2 = BookDto.builder()
@@ -57,6 +58,7 @@ public class InventoryServiceImplIntegrationTest {
                                   .title("t2")
                                   .description("d2")
                                   .price(BigDecimal.valueOf(2))
+                                  .amount(2)
                                   .build();
 
         List<BookDto> expectedListOfBookDto = List.of(bookDto1, bookDto2);
@@ -84,6 +86,7 @@ public class InventoryServiceImplIntegrationTest {
                                          .title("t1")
                                          .description("d1")
                                          .price(BigDecimal.valueOf(1))
+                                         .amount(1)
                                          .build();
 
         BookDto actualBookDto = underTest.findByIsbn(isbnToSearch);
@@ -118,6 +121,7 @@ public class InventoryServiceImplIntegrationTest {
                                        .title("t2")
                                        .description("d2")
                                        .price(BigDecimal.valueOf(2))
+                                       .amount(2)
                                        .build();
 
         BookAlreadyExistsException actualException = assertThrows(BookAlreadyExistsException.class, () -> {
@@ -137,6 +141,7 @@ public class InventoryServiceImplIntegrationTest {
                          .title("t1")
                          .description("d1")
                          .price(BigDecimal.valueOf(1))
+                         .amount(1)
                          .build();
 
         assertNotNull(book1);
@@ -156,6 +161,7 @@ public class InventoryServiceImplIntegrationTest {
                                   .title("t99")
                                   .description("d99")
                                   .price(BigDecimal.valueOf(99))
+                                  .amount(1)
                                   .build();
 
         Book expectedBook = Book.builder()
@@ -163,6 +169,7 @@ public class InventoryServiceImplIntegrationTest {
                                 .title("t99")
                                 .description("d99")
                                 .price(BigDecimal.valueOf(99))
+                                .amount(1)
                                 .build();
 
         String actualIsbn = underTest.update(bookDto1);

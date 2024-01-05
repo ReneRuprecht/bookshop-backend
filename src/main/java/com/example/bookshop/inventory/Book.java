@@ -24,6 +24,7 @@ public class Book {
     private String title;
     private String description;
     private BigDecimal price;
+    private int amount;
 
     public BigDecimal getPrice() {
         return price.setScale(2, RoundingMode.DOWN);
@@ -42,11 +43,12 @@ public class Book {
                 Objects.equals(getIsbn(), book.getIsbn()) &&
                 Objects.equals(getTitle(), book.getTitle()) &&
                 Objects.equals(getDescription(), book.getDescription()) &&
+                Objects.equals(getAmount(), book.getAmount()) &&
                 Objects.equals(getPrice(), book.getPrice());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, isbn, title, description, price);
+        return Objects.hash(id, isbn, title, description, price, amount);
     }
 }

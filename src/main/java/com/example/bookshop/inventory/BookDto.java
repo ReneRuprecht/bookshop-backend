@@ -7,7 +7,7 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 @Builder
-public record BookDto(String isbn, String title, String description, BigDecimal price) {
+public record BookDto(String isbn, String title, String description, BigDecimal price, int amount) {
     @Override
     public BigDecimal price() {
         return price.setScale(2, RoundingMode.DOWN);
@@ -20,6 +20,7 @@ public record BookDto(String isbn, String title, String description, BigDecimal 
                 ", title='" + title() + '\'' +
                 ", description='" + description() + '\'' +
                 ", price=" + price() +
+                ", amount=" + amount() +
                 '}';
     }
 
@@ -35,6 +36,7 @@ public record BookDto(String isbn, String title, String description, BigDecimal 
         return Objects.equals(isbn(), bookDto.isbn()) &&
                 Objects.equals(title(), bookDto.title()) &&
                 Objects.equals(description(), bookDto.description()) &&
+                Objects.equals(amount(), bookDto.amount()) &&
                 Objects.equals(price(), bookDto.price());
     }
 
